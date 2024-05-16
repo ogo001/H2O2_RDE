@@ -1,5 +1,4 @@
-from sklearn.linear_model import LinearRegression
-
+import statsmodels.api as sm
 import pandas as pd
 import numpy as np
 from scipy.signal import savgol_filter
@@ -9,14 +8,14 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 
 
 
-def fit_linear_regression(x, y):
-    lr = LinearRegression()
-    x = np.array(x).reshape(-1, 1)
-    y = np.array(y).reshape(-1, 1)
-    lr.fit(x, y)
-    ypred = lr.predict(x)
 
-    return lr.coef_, lr.intercept_, ypred
+
+def fit_linear_regression(x, y):
+    x = sm.add_constant(x)  # Add a constant term to the predictor
+    model = sm.OLS(y, x).fit()  # Fit ordinary least squares regression
+    ypred = model.predict(x)  # Get predicted values
+
+    return model.params[1:], model.params[0], ypred
 
 
 def baseline_regression(data, raw_data):
